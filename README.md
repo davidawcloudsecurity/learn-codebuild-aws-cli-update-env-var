@@ -66,3 +66,19 @@ for project_name in $project_names; do
     echo
 done
 ```
+## Insert new env variable to codebuild
+```bash
+#!/bin/bash
+
+# Define the input file and a temporary output file
+input_file="env.json"
+temp_file="temp_file.json"
+
+# Use jq to insert the new variable before s3_bucket
+jq '(.environmentVariables | map(if .name == "cluster_name" then [{name: "cluster_version", value: "1.24", type: "PLAINTEXT"}, .] else [.] end) | flatten) as $newVars | .environmentVariables = $newVars' "$input_file"  > "$temp_file"
+
+# Replace the original file with the updated one
+mv "$temp_file" "$input_file"
+
+echo "Inserted cluster_version before cluster_name in $input_file"
+```
