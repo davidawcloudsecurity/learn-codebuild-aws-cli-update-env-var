@@ -68,6 +68,9 @@ done
 ```
 ## Insert new env variable to codebuild
 ```bash
+aws codebuild batch-get-projects --names deploy-project-5zvz902  --query "projects"[]."environment" | jq .[] > env.json
+```
+```bash
 #!/bin/bash
 
 # Define the input file and a temporary output file
@@ -81,4 +84,7 @@ jq '(.environmentVariables | map(if .name == "cluster_name" then [{name: "cluste
 mv "$temp_file" "$input_file"
 
 echo "Inserted cluster_version before cluster_name in $input_file"
+```
+```bash
+aws codebuild update-project --name deploy-project-5zvz902 --environment file://env.json
 ```
